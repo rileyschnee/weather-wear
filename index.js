@@ -15,7 +15,7 @@ const LaunchRequestHandler = {
                 // TODO: get the weather
                 var resp = httpGet(geoObject['coordinate']['latitudeInDegrees'], 
                                    geoObject['coordinate']['longitudeInDegrees']);
-                var precipProbability = resp['daily']['precipProbability'];
+                var precipProb = resp['daily']['precipProbability'];
                 var windSpeed = resp['daily']['windSpeed'];
                 var tempLow = resp['daily']['temperatureLow'];
                 var tempHigh = resp['daily']['temperatureHigh'];
@@ -33,7 +33,7 @@ const LaunchRequestHandler = {
             .getResponse();
     }
 };
-
+//Error Handler
 const ErrorHandler = {
     canHandle() {
         return true;
@@ -75,6 +75,67 @@ function httpGetDS(lat, lon, callback) {
     req.end();
 }
 
+// Recommendations
+function getRecommendation(precipProb, windSpeed, tempLow, 
+                            tempHigh, humidity, cloudCover) {
+    var recommend = '';
+    if(precipProb >= 0.25 && tempLow >= 50){
+        recommend += 'Bring an umbrella. ';
+    } 
+    if(precipProb >= 0.5 && tempLow >= 50){
+        recommend += 'Wear a raincoat. ';
+    }
+    if(precipProb >= 0.75 && tempLow >= 50){
+        recommend += 'Wear rainboots. ';
+    }
+
+    if(windSpeed >= 0.7){
+        recommend += 'It is going to be windy. ';
+    }
+    if(tempLow <= 32){
+        recommend += 'It is below freezing. Wear a heavy coat. ';
+        if(windSpeed >= 0.7){
+            recommend += 'Wear a scarf. ';
+        }
+        if(precipProb >= 0.5){
+            recommend += 'Wear a fluffy hat. ';
+        }
+        if(precipProb >= 0.75){
+            recommend += 'Wear snowboots. ';
+        }
+    }
+    if(tempLow > 32){
+        if(tempHigh < 55){
+            recommend += 'It is going to be chilly. ';
+            recommend += 'You should wear a medium-weight jacket and a scarf. ';
+        }
+        else { // if(tempHigh > 55){
+            recommend += 'The weather is going to vary. ';
+            recommend += 'You should wear layers. ';
+        }
+    }
+    if(tempLow >= 55 && tempHigh < 70){
+        if(tempHigh < 70){
+            recommend += 'The weather will be nice! Wear what you would wear inside.';
+        }
+        else {
+            recommend += 'The weather is going to vary. ';
+            recommend += 'You should wear layers. ';
+        }
+    }
+    if(tempHigh >= 80){
+        if(windSpeed < 0.3){
+            recommend += 'It will be brutally hot. Wear as little clothes as is socially acceptable. ';
+        }
+        else {
+            recommend += 'It will be very hot, but there will be a breeze. Time for shorts. ';
+        }
+    }
+    return recommend;
+}
+
+
+// Exit handler
 const ExitHandler = {
   canHandle(handlerInput) {
     const request = handlerInput.requestEnvelope.request;
@@ -89,7 +150,7 @@ const ExitHandler = {
       .getResponse();
   },
 };
-
+// Session Ended Request Handler
 const SessionEndedRequestHandler = {
   canHandle(handlerInput) {
     const request = handlerInput.requestEnvelope.request;
@@ -100,7 +161,7 @@ const SessionEndedRequestHandler = {
     return handlerInput.responseBuilder.getResponse();
   },
 }
-
+//FallbackHandler
 const FallbackHandler = {
   canHandle(handlerInput) {
     const request = handlerInput.requestEnvelope.request;
@@ -115,7 +176,7 @@ const FallbackHandler = {
       .getResponse();
   },
 };
-
+// Other
 const skillBuilder = Alexa.SkillBuilders.custom();
 exports.handler = skillBuilder
   .addRequestHandlers(
