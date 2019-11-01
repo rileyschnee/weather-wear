@@ -79,15 +79,19 @@ function httpGetDS(lat, lon, callback) {
 function getRecommendation(precipProb, windSpeed, tempLow, 
                             tempHigh, humidity, cloudCover) {
     var recommend = '';
+
     if(cloudCover < 0.2){
 	recommend += 'Bring sunglasses'
     }
+
     if(precipProb >= 0.25 && tempLow >= 50){
         recommend += 'Bring an umbrella. ';
     } 
+
     if(precipProb >= 0.5 && tempLow >= 50){
         recommend += 'Wear a raincoat. ';
     }
+
     if(precipProb >= 0.75 && tempLow >= 50){
         recommend += 'Wear rainboots. ';
     }
@@ -95,6 +99,7 @@ function getRecommendation(precipProb, windSpeed, tempLow,
     if(windSpeed >= 0.7){
         recommend += 'It is going to be windy. ';
     }
+
     if(tempLow <= 32){
         recommend += 'It is below freezing. Wear a heavy coat. ';
         if(windSpeed >= 0.7){
@@ -107,6 +112,7 @@ function getRecommendation(precipProb, windSpeed, tempLow,
             recommend += 'Wear snowboots. ';
         }
     }
+
     if(tempLow > 32){
         if(tempHigh < 55 && cloudCover > 0.4){
             recommend += 'It is going to be chilly. ';
@@ -117,6 +123,7 @@ function getRecommendation(precipProb, windSpeed, tempLow,
             recommend += 'You should wear layers. ';
         }
     }
+
     if(tempLow >= 55 && tempHigh < 70){
         if(tempHigh < 70 && cloudCover > 0.4){
             recommend += 'The weather will be nice! Wear what you would wear inside.';
@@ -126,6 +133,7 @@ function getRecommendation(precipProb, windSpeed, tempLow,
             recommend += 'You should wear layers. ';
         }
     }
+
     if(tempHigh >= 80){
         if(windSpeed < 0.3 && cloudCover < 0.2){
             recommend += 'It will be brutally hot. Wear as little clothes as is socially acceptable. ';
@@ -134,6 +142,7 @@ function getRecommendation(precipProb, windSpeed, tempLow,
             recommend += 'It will be very hot, but there will be a breeze. Time for shorts. ';
         }
     }
+
     return recommend;
 }
 
