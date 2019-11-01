@@ -92,3 +92,12 @@ const SessionEndedRequestHandler = {
     return handlerInput.responseBuilder.getResponse();
   },
 }
+
+exports.handler = skillBuilder
+  .addRequestHandlers(
+    GetNewFactHandler,
+    ExitHandler,
+    SessionEndedRequestHandler,
+  )
+  .addErrorHandlers(ErrorHandler)
+  .lambda();
