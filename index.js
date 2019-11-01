@@ -79,6 +79,9 @@ function httpGetDS(lat, lon, callback) {
 function getRecommendation(precipProb, windSpeed, tempLow, 
                             tempHigh, humidity, cloudCover) {
     var recommend = '';
+    if(cloudCover < 0.2){
+	recommend += 'Bring sunglasses'
+    }
     if(precipProb >= 0.25 && tempLow >= 50){
         recommend += 'Bring an umbrella. ';
     } 
