@@ -5,7 +5,7 @@ const LaunchRequestHandler = {
         return Alexa.getRequestType(handlerInput.requestEnvelope) === 'LaunchRequest';
     },
     handle(handlerInput) {
-        const speakOutput = 'Hello! Welcome to weather wear!';
+        const speakOutput = 'Hello! Welcome to weather wear. Ask me for outfit suggestions based on the weather!';
         var isGeoSupported = context.System.device.supportedInterfaces.Geolocation;
         var geoObject = context.Geolocation;
         if (isGeoSupported) {
@@ -26,9 +26,25 @@ const LaunchRequestHandler = {
         } else {
             speakOutput = 'I am experiencing issues connecting to your location.';
         }
+	const repromptText = 'I prefer to wear scarves when it is windy. Would you like an outfit recommendation?'
         return handlerInput.responseBuilder
             .speak(speakOutput)
-            // .reprompt(speakOutput)
+            .reprompt(repromptText)
+            .getResponse();
+    }
+};
+//Error Handler
+const ErrorHandler = {
+    canHandle() {
+        return true;
+    },
+    handle(handlerInput, error) {
+        console.log(`~~~~ Error handled: ${error.stack}`);
+        const speakOutput = `Sorry, I had trouble doing what you asked. Please try again.`;
+
+        return handlerInput.responseBuilder
+            .speak(speakOutput)
+            .reprompt(speakOutput)
             .getResponse();
     }
 };
@@ -59,6 +75,7 @@ function httpGetDS(lat, lon, callback) {
     req.end();
 }
 
+// Recommendations
 function getRecommendation(precipProb, windSpeed, tempLow, 
                             tempHigh, humidity, cloudCover) {
     var recommend = '';
@@ -118,5 +135,55 @@ function getRecommendation(precipProb, windSpeed, tempLow,
 }
 
 
-
-
+// Exit handler
+const ExitHandler = {
+  canHandle(handlerInput) {
+    const request = handlerInput.requestEnvelope.request;
+    return request.type === 'IntentRequest'
+      && (request.intent.name === 'AMAZON.CancelIntent'
+        || request.intent.name === 'AMAZON.StopIntent');
+  },
+  handle(handlerInput) {
+    const requestAttributes = handlerInput.attributesManager.getRequestAttributes();
+    return handlerInput.responseBuilder
+      .speak(requestAttributes.t('STOP_MESSAGE'))
+      .getResponse();
+  },
+};
+// Session Ended Request Handler
+const SessionEndedRequestHandler = {
+  canHandle(handlerInput) {
+    const request = handlerInput.requestEnvelope.request;
+    return request.type === 'SessionEndedRequest';
+  },
+  handle(handlerInput) {
+    console.log(`Session ended with reason: ${handlerInput.requestEnvelope.request.reason}`);
+    return handlerInput.responseBuilder.getResponse();
+  },
+}
+//FallbackHandler
+const FallbackHandler = {
+  canHandle(handlerInput) {
+    const request = handlerInput.requestEnvelope.request;
+    return request.type === 'IntentRequest'
+      && request.intent.name === 'AMAZON.FallbackIntent';
+  },
+  handle(handlerInput) {
+    const requestAttributes = handlerInput.attributesManager.getRequestAttributes();
+    return handlerInput.responseBuilder
+      .speak(requestAttributes.t('FALLBACK_MESSAGE'))
+      .reprompt(requestAttributes.t('FALLBACK_REPROMPT'))
+      .getResponse();
+  },
+};
+// Other
+const skillBuilder = Alexa.SkillBuilders.custom();
+exports.handler = skillBuilder
+  .addRequestHandlers(
+    GetNewFactHandler,
+    ExitHandler,
+    SessionEndedRequestHandler,
+    FallbackHandler
+  )
+  .addErrorHandlers(ErrorHandler)
+  .lambda();
