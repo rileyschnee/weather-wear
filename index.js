@@ -105,7 +105,7 @@ function getRecommendation(precipProb, windSpeed, tempLow,
         }
     }
     if(tempLow > 32){
-        if(tempHigh < 55){
+        if(tempHigh < 55 && cloudCover > 0.4){
             recommend += 'It is going to be chilly. ';
             recommend += 'You should wear a medium-weight jacket and a scarf. ';
         }
@@ -115,7 +115,7 @@ function getRecommendation(precipProb, windSpeed, tempLow,
         }
     }
     if(tempLow >= 55 && tempHigh < 70){
-        if(tempHigh < 70){
+        if(tempHigh < 70 && cloudCover > 0.4){
             recommend += 'The weather will be nice! Wear what you would wear inside.';
         }
         else {
@@ -124,7 +124,7 @@ function getRecommendation(precipProb, windSpeed, tempLow,
         }
     }
     if(tempHigh >= 80){
-        if(windSpeed < 0.3){
+        if(windSpeed < 0.3 && cloudCover < 0.2){
             recommend += 'It will be brutally hot. Wear as little clothes as is socially acceptable. ';
         }
         else {
