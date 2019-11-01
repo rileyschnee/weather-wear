@@ -101,12 +101,28 @@ const SessionEndedRequestHandler = {
   },
 }
 
+const FallbackHandler = {
+  canHandle(handlerInput) {
+    const request = handlerInput.requestEnvelope.request;
+    return request.type === 'IntentRequest'
+      && request.intent.name === 'AMAZON.FallbackIntent';
+  },
+  handle(handlerInput) {
+    const requestAttributes = handlerInput.attributesManager.getRequestAttributes();
+    return handlerInput.responseBuilder
+      .speak(requestAttributes.t('FALLBACK_MESSAGE'))
+      .reprompt(requestAttributes.t('FALLBACK_REPROMPT'))
+      .getResponse();
+  },
+};
+
 const skillBuilder = Alexa.SkillBuilders.custom();
 exports.handler = skillBuilder
   .addRequestHandlers(
     GetNewFactHandler,
     ExitHandler,
     SessionEndedRequestHandler,
+    FallbackHandler
   )
   .addErrorHandlers(ErrorHandler)
   .lambda();
