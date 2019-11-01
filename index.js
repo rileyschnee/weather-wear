@@ -13,6 +13,14 @@ const LaunchRequestHandler = {
             if (geoObject && geoObject.coordinate && 
                 geoObject.coordinate.accuracyInMeters < ACCURACY_THRESHOLD ) { 
                 // TODO: get the weather
+                var resp = httpGet(geoObject['coordinate']['latitudeInDegrees'], 
+                                   geoObject['coordinate']['longitudeInDegrees']);
+                var precipProbability = resp['daily']['precipProbability'];
+                var windSpeed = resp['daily']['windSpeed'];
+                var tempLow = resp['daily']['temperatureLow'];
+                var tempHigh = resp['daily']['temperatureHigh'];
+                var humidity = resp['daily']['humidity']
+                var cloudCover = resp['daily']['cloudCover']
                 console.log(geoObject);  // Print the geo-coordinates object if accuracy is within 100 meters
             }
         } else {
@@ -25,10 +33,10 @@ const LaunchRequestHandler = {
     }
 };
 
-function httpGet(query, callback) {
+function httpGetDS(lat, lon, callback) {
     var options = {
-        host: 'numbersapi.com',
-        path: '/' + encodeURIComponent(query),
+        host: 'https://api.darksky.net',
+        path: '/forecast/' + encodeURIComponent(DARK_SKY) + '/' + encodeURIComponent(lat) + ',' + encodeURIComponent(lon),
         method: 'GET',
     };
 
