@@ -18,7 +18,7 @@ const LaunchRequestHandler = {
         } else {
             speakOutput = 'I am experiencing issues connecting to your location.';
         }
-	      const repromptText = 'I prefer to wear scarves when it is windy. Would you like an outfit recommendation?'
+	const repromptText = 'I prefer to wear scarves when it is windy. Would you like an outfit recommendation?'
         return handlerInput.responseBuilder
             .speak(speakOutput)
             .reprompt(repromptText)
@@ -51,3 +51,19 @@ function httpGet(query, callback) {
     });
     req.end();
 }
+
+const ExitHandler = {
+  canHandle(handlerInput) {
+    const request = handlerInput.requestEnvelope.request;
+    return request.type === 'IntentRequest'
+      && (request.intent.name === 'AMAZON.CancelIntent'
+        || request.intent.name === 'AMAZON.StopIntent');
+  },
+  handle(handlerInput) {
+    const requestAttributes = handlerInput.attributesManager.getRequestAttributes();
+    return handlerInput.responseBuilder
+      .speak(requestAttributes.t('STOP_MESSAGE'))
+      .getResponse();
+  },
+};
+
