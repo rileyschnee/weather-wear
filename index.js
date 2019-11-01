@@ -5,7 +5,7 @@ const LaunchRequestHandler = {
         return Alexa.getRequestType(handlerInput.requestEnvelope) === 'LaunchRequest';
     },
     handle(handlerInput) {
-        const speakOutput = 'Hello! Welcome to weather wear!';
+        const speakOutput = 'Hello! Welcome to weather wear. Ask me for outfit suggestions based on the weather!';
         var isGeoSupported = context.System.device.supportedInterfaces.Geolocation;
         var geoObject = context.Geolocation;
         if (isGeoSupported) {
@@ -18,9 +18,10 @@ const LaunchRequestHandler = {
         } else {
             speakOutput = 'I am experiencing issues connecting to your location.';
         }
+	      const repromptText = 'I prefer to wear scarves when it is windy. Would you like an outfit recommendation?'
         return handlerInput.responseBuilder
             .speak(speakOutput)
-            // .reprompt(speakOutput)
+            .reprompt(repromptText)
             .getResponse();
     }
 };
